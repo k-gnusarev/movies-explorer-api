@@ -5,39 +5,32 @@ const express = require('express');
 // const mongoose = require('mongoose');
 // const helmet = require('helmet');
 // const { errors } = require('celebrate');
-// const {
-//   createUser,
-//   login,
-// } = require('./controllers/users');
+const {
+  createUser,
+  login,
+} = require('./controllers/users');
 // const auth = require('./middlewares/auth');
-// const { userInfoValidation, loginValidation } = require('./middlewares/requestValidation');
+const { userInfoValidation, loginValidation } = require('./middlewares/requestValidation');
 // const { requestLogger, errorLogger } = require('./middlewares/logger');
 // const NotFoundError = require('./errors/NotFoundError');
-// const userRouter = require('./routes/users');
-// const cardRouter = require('./routes/cards');
+const userRouter = require('./routes/users');
+const movieRouter = require('./routes/movies');
 
 const { PORT = 3000 } = process.env;
 const app = express();
 
 // // МИДЛВЕРЫ
 // app.use(cors());
-// app.use(express.json());
+app.use(express.json());
 // app.use(requestLogger);
 
-// // удалить после успешного ревью
-// app.get('/crash-test', () => {
-//   setTimeout(() => {
-//     throw new Error('Сервер сейчас упадёт');
-//   }, 0);
-// });
-
-// // роуты, не требующие авторизации
+// роуты, не требующие авторизации
 // app.post('/signin', loginValidation, login);
 // app.post('/signup', userInfoValidation, createUser);
 
-// // роуты, защищённые авторизацией
-// app.use('/users', auth, userRouter);
-// app.use('/cards', auth, cardRouter);
+// роуты, защищённые авторизацией
+app.use('/users', userRouter);
+app.use('/movies', movieRouter);
 
 // // security stuff
 // app.use(helmet());
