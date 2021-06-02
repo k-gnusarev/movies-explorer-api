@@ -1,7 +1,7 @@
 // /* eslint-disable linebreak-style */
 require('dotenv').config();
 const express = require('express');
-// const cors = require('cors');
+const cors = require('cors');
 const mongoose = require('mongoose');
 const helmet = require('helmet');
 const { errors } = require('celebrate');
@@ -20,7 +20,7 @@ const { PORT = 3000 } = process.env;
 const app = express();
 
 // // МИДЛВЕРЫ
-// app.use(cors());
+app.use(cors());
 app.use(express.json());
 app.use(requestLogger);
 

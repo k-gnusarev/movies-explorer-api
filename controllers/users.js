@@ -110,8 +110,6 @@ const createUser = (req, res, next) => {
 };
 
 module.exports = {
-//  getUsers,
-//  getUser,
   createUser,
   updateUserInfo,
   getCurrentUser,
