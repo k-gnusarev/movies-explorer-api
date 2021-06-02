@@ -81,8 +81,8 @@ const movieValidation = celebrate({
       nameEN: Joi
         .string()
         .required(),
-  }),
-})
+    }),
+});
 
 // валидация данных авторизации
 const loginValidation = celebrate({

@@ -19,7 +19,6 @@ const createMovie = (req, res, next) => {
     nameRU,
     nameEN,
   } = req.body;
-  console.log(req.user);
   const owner = req.user._id;
 
   Movie.create({
