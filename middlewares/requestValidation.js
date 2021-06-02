@@ -7,7 +7,7 @@ const idValidation = celebrate({
   params: Joi
     .object()
     .keys({
-      id: Joi
+      movieId: Joi
         .string()
         .hex()
         .length(24),

@@ -1,8 +1,10 @@
 const Movie = require('../models/movie');
+
 const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
 const ForbiddenError = require('../errors/ForbiddenError');
 
+// POST /movies
 const createMovie = (req, res, next) => {
   const {
     country,
@@ -17,6 +19,7 @@ const createMovie = (req, res, next) => {
     nameRU,
     nameEN,
   } = req.body;
+  console.log(req.user);
   const owner = req.user._id;
 
   Movie.create({
@@ -42,6 +45,7 @@ const createMovie = (req, res, next) => {
     .catch(next);
 };
 
+// GET /movies
 const getMovies = (req, res, next) => {
   const owner = req.user._id;
   Movie.find({ owner })
@@ -49,6 +53,7 @@ const getMovies = (req, res, next) => {
     .catch(next);
 };
 
+// DELETE /movies/:id
 const deleteMovie = (req, res, next) => {
   Movie.findById(req.params.movieId)
     .then((movie) => {

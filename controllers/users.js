@@ -41,49 +41,79 @@ const getCurrentUser = (req, res, next) => {
     .catch(next);
 };
 
-// // авторизация пользователя
-// const login = (req, res, next) => {
-//   const { email, password } = req.body;
+// авторизация пользователя
+const login = (req, res, next) => {
+  const { email, password } = req.body;
 
-//   User.findOne({ email })
-//     .select('+password') // вернуть хеш пароля при авторизации
-//     .then((user) => {
-//       if (!user) {
-//         return Promise.reject(new Error('Неправильные почта или пароль'));
-//       }
+  User.findOne({ email })
+    .select('+password') // вернуть хеш пароля при авторизации
+    .then((user) => {
+      if (!user) {
+        return Promise.reject(new Error('Неправильные почта или пароль'));
+      }
 
-//       // пользователь найден
-//       return bcrypt.compare(password, user.password).then((matched) => {
-//         // проверка соответствия хеша пароля с базой
-//         if (!matched) {
-//           // хеши не совпали — отклоняем промис
-//           return Promise.reject(new Error('Неправильные почта или пароль'));
-//         }
+      // пользователь найден
+      return bcrypt.compare(password, user.password).then((matched) => {
+        // проверка соответствия хеша пароля с базой
+        if (!matched) {
+          // хеши не совпали — отклоняем промис
+          return Promise.reject(new Error('Неправильные почта или пароль'));
+        }
 
-//         return user;
-//       });
-//     })
-//     .then((user) => {
-//       const token = jwt.sign(
-//         { _id: user._id },
-//         NODE_ENV === 'production' ? JWT_SECRET : 'some-secret-key',
-//         { expiresIn: '7d' },
-//       );
+        return user;
+      });
+    })
+    .then((user) => {
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === 'production' ? JWT_SECRET : 'some-secret-key',
+        { expiresIn: '7d' },
+      );
 
-//       // выдать токен
-//       res.send({ token });
-//     })
-//     .catch((err) => {
-//       throw new AuthError(err.message);
-//     })
-//     .catch(next);
-// };
+      // выдать токен
+      res.send({ token });
+    })
+    .catch((err) => {
+      throw new AuthError(err.message);
+    })
+    .catch(next);
+};
+
+// POST /users — создаёт пользователя
+const createUser = (req, res, next) => {
+  const {
+    name,
+    email,
+    password,
+  } = req.body; // извлекаем данные из тела запроса
+
+  // хешируем пароль
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name,
+      email,
+      password: hash,
+    }))
+    .then((user) => res.send({ // записываем данные пользователя в ответ и отправляем его
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+    }))
+    .catch((err) => {
+      if (err.name === 'MongoError' || err.code === 11000) {
+        throw new ConflictError(err.message);
+      }
+
+      throw new ValidationError(err.message);
+    })
+    .catch(next);
+};
 
 module.exports = {
 //  getUsers,
 //  getUser,
-//  createUser,
+  createUser,
   updateUserInfo,
   getCurrentUser,
-//  login,
+  login,
 };
