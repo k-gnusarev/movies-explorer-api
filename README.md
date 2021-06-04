@@ -3,16 +3,18 @@
 
 # Директории
 
-/routes — маршруты
-/controllers — контроллеры
-/models — модели базы данных MongoDB
-/middlewares — папка с middlewares-файлами
-/errors - папка с обработчиками ошибок
+* /routes — маршруты
+* /controllers — контроллеры
+* /models — модели базы данных MongoDB
+* /middlewares — папка с middlewares-файлами
+* /errors - папка с обработчиками ошибок
 
 # Запуск проекта
 
-`npm run start` — запуск сервера
-`npm run dev` — запуск dev-режима сервера
+* Перед запуском сервера необходимо запустить базу данных командой `mongod`
+* `npm run start` — запуск сервера в prod-режиме
+* `npm run dev` — запуск dev-режима сервера
+
 
 # Адрес API
 
