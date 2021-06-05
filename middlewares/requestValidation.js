@@ -3,14 +3,9 @@ const validator = require('validator');
 
 // валидация ID
 const idValidation = celebrate({
-  params: Joi
-    .object()
-    .keys({
-      movieId: Joi
-        .string()
-        .hex()
-        .length(24),
-    }),
+  params: Joi.object().keys({
+    movieId: Joi.string().required().length(24).hex(),
+  }),
 });
 
 // валидация инфо о пользователе
@@ -72,7 +67,7 @@ const movieValidation = celebrate({
           return helpers.message('Неправильный формат ссылки');
         }),
       movieId: Joi
-        .string()
+        .number()
         .required(),
       nameRU: Joi
         .string()

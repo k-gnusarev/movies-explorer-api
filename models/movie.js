@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 const movieSchema = new mongoose.Schema({
   country: {
@@ -26,7 +27,7 @@ const movieSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(url) {
-        return /(https?):\/\/\w*\S*\./.test(url);
+        return validator.isURL(url);
       },
       message: 'Неправильный формат адреса',
     },
@@ -36,7 +37,7 @@ const movieSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(url) {
-        return /(https?):\/\/\w*\S*\./.test(url);
+        return validator.isURL(url);
       },
       message: 'Неправильный формат адреса',
     },
@@ -46,7 +47,7 @@ const movieSchema = new mongoose.Schema({
     required: true,
     validate: {
       validator(url) {
-        return /(https?):\/\/\w*\S*\./.test(url);
+        return validator.isURL(url);
       },
       message: 'Неправильный формат адреса',
     },

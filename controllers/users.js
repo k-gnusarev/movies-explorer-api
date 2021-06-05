@@ -6,10 +6,13 @@ const AuthError = require('../errors/AuthError');
 const ConflictError = require('../errors/ConflictError');
 const NotFoundError = require('../errors/NotFoundError');
 const ValidationError = require('../errors/ValidationError');
-
-const { NODE_ENV, JWT_SECRET } = process.env;
+const { JWT_SECRET } = require('../config');
 
 function handleErrors(err) {
+  if (err.name === 'MongoError' || err.code === '11000') {
+    throw new ConflictError('Пользователь с таким email уже зарегистрирован');
+  }
+
   if (err.message === 'NullReturned' || err.name === 'CastError') {
     throw new NotFoundError(err.message);
   } else {
@@ -31,11 +34,8 @@ const updateUserInfo = (req, res, next) => {
 // GET users/me — выдаёт текущего пользователя
 const getCurrentUser = (req, res, next) => {
   User.findById(req.user._id) // поиск пользователя
-    .orFail(new Error('NullReturned'))
+    .orFail(new NotFoundError('Пользователя не существует'))
     .then((user) => res.send(user))
-    .catch((err) => {
-      throw new NotFoundError(err.message);
-    })
     .catch(next);
 };
 
@@ -47,15 +47,15 @@ const login = (req, res, next) => {
     .select('+password') // вернуть хеш пароля при авторизации
     .then((user) => {
       if (!user) {
-        return Promise.reject(new Error('Неправильные почта или пароль'));
+        throw new AuthError('Неправильные почта или пароль');
       }
 
       // пользователь найден
       return bcrypt.compare(password, user.password).then((matched) => {
         // проверка соответствия хеша пароля с базой
         if (!matched) {
-          // хеши не совпали — отклоняем промис
-          return Promise.reject(new Error('Неправильные почта или пароль'));
+          // хеши не совпали — выкидываем ошибку
+          throw new AuthError('Неправильные почта или пароль');
         }
 
         return user;
@@ -64,15 +64,12 @@ const login = (req, res, next) => {
     .then((user) => {
       const token = jwt.sign(
         { _id: user._id },
-        NODE_ENV === 'production' ? JWT_SECRET : 'some-secret-key',
+        JWT_SECRET,
         { expiresIn: '7d' },
       );
 
       // выдать токен
       res.send({ token });
-    })
-    .catch((err) => {
-      throw new AuthError(err.message);
     })
     .catch(next);
 };
@@ -99,7 +96,7 @@ const createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.name === 'MongoError' || err.code === 11000) {
-        throw new ConflictError(err.message);
+        throw new ConflictError('Пользователь уже зарегистрирован');
       }
 
       throw new ValidationError(err.message);
